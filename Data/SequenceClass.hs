@@ -31,11 +31,13 @@ Minimal complete defention: 'empty' and 'singleton' and ('viewl' or 'viewr') and
 Instances should satisfy the following laws:
 
 Monoid laws:
+
 > empty >< x == x
 > x >< empty == x
 > (x >< y) >< z = x >< (y >< z)
 
 Observation laws:
+
 > viewl (singleton e >< s) == e :< s
 > viewl empty == EmptyL
 
@@ -52,21 +54,27 @@ class (Functor s, Foldable s) => Sequence s where
   -- | View a sequence from the right
   --          
   -- Default definition:
+  --
   -- > viewr q = case viewl q of 
   -- >    EmptyL -> EmptyR
   -- >    h :< t -> case viewr t of
   -- >        EmptyR -> empty   :> h
   -- >        p :> l   -> (h <| p) :> l
+  --
   viewr     :: s c -> ViewR s c 
   -- | Append a single element to the right
   -- 
   -- Default definition:
+  --
   -- > l |> r = l >< singleton r
+  -- 
   (|>)       :: s c -> c  -> s c 
   -- | Append a single element to the left
   -- 
   -- Default definition:
+  --
   -- > l <| r = singleton l >< r
+  --
   (<|)       :: c  -> s c -> s c
   
   l |> r = l >< singleton r

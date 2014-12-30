@@ -1,5 +1,5 @@
 Name:                sequence
-Version:             0.9.3
+Version:             0.9.4
 Synopsis:	         A type class for sequences and various sequence data structures.
 Description:         A type class for sequences and various sequence data structures.
 License:             BSD3
