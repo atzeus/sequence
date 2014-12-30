@@ -49,27 +49,24 @@ class (Functor s, Foldable s) => Sequence s where
   (><)       :: s c  -> s c   -> s c 
   -- | View a sequence from the left
   viewl     :: s c  -> ViewL s c 
-{- | View a sequence from the right
-         
-Default definition:
-> viewr q = case viewl q of 
->    EmptyL -> EmptyR
->    h :< t -> case viewr t of
->        EmptyR -> empty   :> h
->        p :> l   -> (h <| p) :> l
--}
+  -- | View a sequence from the right
+  --          
+  -- Default definition:
+  -- > viewr q = case viewl q of 
+  -- >    EmptyL -> EmptyR
+  -- >    h :< t -> case viewr t of
+  -- >        EmptyR -> empty   :> h
+  -- >        p :> l   -> (h <| p) :> l
   viewr     :: s c -> ViewR s c 
-{- | Append a single element to the right
-
-Default definition:
-> l |> r = l >< singleton r
--}
+  -- | Append a single element to the right
+  -- 
+  -- Default definition:
+  -- > l |> r = l >< singleton r
   (|>)       :: s c -> c  -> s c 
-{- | Append a single element to the left
-
-Default definition:
-> l <| r = tsingleton l >< r
--}
+  -- | Append a single element to the left
+  -- 
+  -- Default definition:
+  -- > l <| r = singleton l >< r
   (<|)       :: c  -> s c -> s c
   
   l |> r = l >< singleton r
