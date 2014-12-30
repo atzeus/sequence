@@ -12,7 +12,7 @@
 -- Portability :  portable
 -- A type class for sequences.
 --
--- See the package 'type-aligned' for a generalization of this type class sequences.
+-- See the package type-aligned for a generalization of this type class sequences.
 -- 
 -----------------------------------------------------------------------------
 module Data.SequenceClass(Sequence(..), ViewL(..), ViewR(..)) where

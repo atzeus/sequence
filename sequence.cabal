@@ -1,5 +1,5 @@
 Name:                sequence
-Version:             0.9.0
+Version:             0.9.1
 Synopsis:	         A type class for sequences and various sequence data structures.
 Description:         A type class for sequences and various sequence data structures.
 License:             BSD3
@@ -19,4 +19,4 @@ Library
 
 source-repository head
     type:     git
-    location:  https://github.com/atzeus/type-aligned
+    location:  https://github.com/atzeus/sequence
