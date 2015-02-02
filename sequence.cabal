@@ -13,7 +13,7 @@ Data-files:          ChangeLog
 Category:            Data, Data Structures
 Tested-With:         GHC==7.6.3
 Library
-  Build-Depends: base >= 2 && <= 6, containers
+  Build-Depends: base >= 2 && <= 6, containers, transformers
   Exposed-modules: Data.SequenceClass, Data.Sequence.Queue, Data.Sequence.FastQueue, Data.Sequence.FastCatQueue,  Data.Sequence.ToCatQueue
   Extensions:	
 
