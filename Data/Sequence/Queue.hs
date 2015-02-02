@@ -20,7 +20,10 @@
 --
 -----------------------------------------------------------------------------
 module Data.Sequence.Queue(module Data.SequenceClass,Queue)  where
+import Control.Applicative (pure, (<*>), (<$>))
 import Data.Foldable
+import Data.Monoid ((<>))
+import Data.Traversable
 import Prelude hiding (foldr,foldl)
 import Data.SequenceClass
 
@@ -29,6 +32,14 @@ data P a = a :* a
 instance Functor P where
   fmap f (a :* b) = f a :* f b
 
+instance Foldable P where
+  foldl f z (a :* b) = f (f z a) b
+  foldr f z (a :* b) = f a (f b z)
+  foldMap f (a :* b) = f a <> f b
+
+instance Traversable P where
+  traverse f (a :* b) = (:*) <$> f a <*> f b
+
 data B a where
   B1 :: a    -> B a
   B2 :: !(P a)  -> B a
@@ -36,6 +47,18 @@ data B a where
 instance Functor B where
  fmap phi (B1 c) = B1 (phi c)
  fmap phi (B2 p) = B2 (fmap phi p)
+
+instance Foldable B where
+  foldl f z (B1 x) = f z x
+  foldl f z (B2 p) = foldl f z p
+  foldr f z (B1 x) = f x z
+  foldr f z (B2 p) = foldr f z p
+  foldMap f (B1 x) = f x
+  foldMap f (B2 p) = foldMap f p
+
+instance Traversable B where
+  traverse f (B1 x) = B1 <$> f x
+  traverse f (B2 p) = B2 <$> traverse f p
 
 data Queue a  where
   Q0 :: Queue a 
@@ -56,6 +79,11 @@ instance Foldable Queue where
     where toRevList s = case viewl s of
            EmptyL -> []
            h :< t -> h : toRevList t
+
+instance Traversable Queue where
+  traverse f Q0 = pure Q0
+  traverse f (Q1 x) = Q1 <$> f x
+  traverse f (QN b1 q b2) = QN <$> traverse f b1 <*> traverse (traverse f) q <*> traverse f b2
 
 instance Sequence Queue where
   empty = Q0
