@@ -1,3 +1,4 @@
+0.9.6: Fixed bug in Functor for FastQueue which causes it be not O(1)
 0.9.5: Added traversable instances (thanks dolio!)
 0.9.4: More fixing docs
 0.9.3: Fix docs

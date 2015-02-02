@@ -42,7 +42,9 @@ queue f r [] = let f' = revAppend f r
 queue f r (h : t) = RQ f r t
 
 instance Functor FastQueue where
-  fmap phi (RQ a b c) = RQ (fmap phi a) (fmap phi b) (fmap phi c)
+  fmap phi q = case viewl q of
+     EmptyL -> empty
+     h :< t -> phi h <| fmap phi t
 
 instance Foldable FastQueue where
   foldl f = loop where
