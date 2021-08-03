@@ -14,7 +14,14 @@ Category:            Data, Data Structures
 Tested-With:         GHC==7.6.3
 Library
   Build-Depends: base >= 2 && <= 6, containers, transformers
-  Exposed-modules: Data.SequenceClass,Data.Sequence.BSeq, Data.Sequence.Queue, Data.Sequence.FastQueue, Data.Sequence.FastCatQueue,  Data.Sequence.ToCatQueue
+  Exposed-modules:
+      Data.SequenceClass
+    , Data.Sequence.BSeq
+    , Data.Sequence.Queue
+    , Data.Sequence.FastQueue
+    , Data.Sequence.FastCatQueue
+    , Data.Sequence.ToCatQueue
+  Other-modules: Any
   Extensions:	
 
 source-repository head
