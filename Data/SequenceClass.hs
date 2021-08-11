@@ -44,7 +44,7 @@ Observation laws:
 
 The behaviour of '<|','|>', and 'viewr' is implied by the above laws and their default definitions.
 -}
-class (Functor s, Foldable s) => Sequence s where
+class Traversable s => Sequence s where
 
   empty     :: s c 
   singleton :: c  -> s c 
