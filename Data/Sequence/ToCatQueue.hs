@@ -1,5 +1,11 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE GADTs #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveTraversable #-}
+#if __GLASGOW_HASKELL__ < 710
+{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor #-}
+#endif
 
 
 
@@ -39,6 +45,10 @@ data ToCatQueue q a where
   C0 :: ToCatQueue q a
   CN :: a -> !(q (ToCatQueue q a)) -> ToCatQueue q a
 
+deriving instance Functor q => Functor (ToCatQueue q)
+deriving instance Foldable q => Foldable (ToCatQueue q)
+deriving instance Traversable q => Traversable (ToCatQueue q)
+
 instance (Show a, Foldable q) => Show (ToCatQueue q a) where
     showsPrec p xs = showParen (p > 10) $
         showString "fromList " . shows (toList xs)
@@ -63,16 +73,6 @@ instance (Foldable q, Eq a) => Eq (ToCatQueue q a) where
 instance (Foldable q, Ord a) => Ord (ToCatQueue q a) where
   compare = compare `on` toList
 
-instance Functor q => Functor (ToCatQueue q) where
-  fmap f C0 = C0
-  fmap f (CN l m) = CN (f l) (fmap (fmap f) m)
-
-instance Foldable q => Foldable (ToCatQueue q) where
-  foldl f z C0 = z
-  foldl f z (CN x qs) = foldl (foldl f) (f z x) qs
-  foldr f z C0 = z
-  foldr f z (CN x qs) = x `f` foldr (\q z -> foldr f z q) z qs
-
 instance Sequence q => Sequence (ToCatQueue q) where
  empty       = C0
  singleton a = CN a empty
@@ -89,10 +89,6 @@ instance Sequence q => Sequence (ToCatQueue q) where
      CN x q :< t  -> CN x (q `snoc` linkAll t)
     snoc q C0  = q
     snoc q r   = q |> r
-
-instance Traversable q => Traversable (ToCatQueue q) where
-  traverse f C0 = pure C0
-  traverse f (CN x qs) = liftA2 CN (f x) (traverse (traverse f) qs)
 
 #if MIN_VERSION_base(4,9,0)
 instance Sequence q => Semigroup.Semigroup (ToCatQueue q a) where

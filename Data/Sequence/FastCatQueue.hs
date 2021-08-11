@@ -9,7 +9,7 @@
 -- Stability   :  provisional
 -- Portability :  portable
 --
--- A sequence, a catanable queue, with worst case constant time: '><', '|>', '<|' and 'tviewl'.
+-- A sequence, a catenable queue, with worst case constant time: '><', '|>', '<|' and 'viewl'.
 --
 -----------------------------------------------------------------------------
 module Data.Sequence.FastCatQueue(module Data.SequenceClass, FastTCQueue) where
@@ -18,4 +18,5 @@ import Data.SequenceClass
 import Data.Sequence.FastQueue
 import Data.Sequence.ToCatQueue
 
+-- | A catenable queue.
 type FastTCQueue =  ToCatQueue FastQueue
