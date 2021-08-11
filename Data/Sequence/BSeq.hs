@@ -25,7 +25,7 @@
 module Data.Sequence.BSeq(module Data.SequenceClass,BSeq)  where
 import Control.Applicative hiding (empty)
 import Data.Foldable
-import Data.Monoid ((<>))
+import Data.Monoid (Monoid (..), (<>))
 import Data.Traversable
 import qualified Text.Read as TR
 #if MIN_VERSION_base(4,9,0)

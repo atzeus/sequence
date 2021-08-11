@@ -147,7 +147,7 @@ instance T.Traversable FastQueue where
   traverse f = fmap fromList . go
     where
       go q = case viewl q of
-        EmptyL -> pure empty
+        EmptyL -> A.pure empty
         h :< t  -> A.liftA2 (:) (f h) (go t)
 
 #if MIN_VERSION_base(4,9,0)
