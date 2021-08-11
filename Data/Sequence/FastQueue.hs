@@ -32,6 +32,7 @@ import Data.Function (on)
 import qualified Text.Read as TR
 #if MIN_VERSION_base(4,9,0)
 import Data.Functor.Classes (Show1 (..))
+import qualified Data.Semigroup as Semigroup
 #endif
 
 #if !MIN_VERSION_base(4,8,0)
@@ -132,3 +133,15 @@ instance Traversable FastQueue where
       go q = case viewl q of
         EmptyL -> pure empty
         h :< t  -> A.liftA2 (:) (f h) (go t)
+
+#if MIN_VERSION_base(4,9,0)
+instance Semigroup.Semigroup (FastQueue a) where
+  (<>) = (><)
+#endif
+instance Monoid (FastQueue a) where
+  mempty = empty
+#if MIN_VERSION_base(4,9,0)
+  mappend = (Semigroup.<>)
+#else
+  mappend = (><)
+#endif

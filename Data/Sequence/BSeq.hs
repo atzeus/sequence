@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE Rank2Types,GADTs, DataKinds, TypeOperators #-}
 
 
@@ -18,6 +19,9 @@
 module Data.Sequence.BSeq(module Data.SequenceClass,BSeq)  where
 import Control.Applicative (pure, (<*>), (<$>))
 import Data.Foldable
+#if MIN_VERSION_base(4,9,0)
+import qualified Data.Semigroup as Semigroup
+#endif
 import Data.Monoid ((<>))
 import Data.Traversable
 import Prelude hiding (foldr,foldl)
@@ -49,6 +53,18 @@ instance Traversable BSeq where
     loop (Leaf x) = Leaf <$> f x
     loop (Node l r) = Node <$> loop l <*> loop r
 
+#if MIN_VERSION_base(4,9,0)
+instance Semigroup.Semigroup (BSeq a) where
+  (<>) = (><)
+#endif
+instance Monoid (BSeq a) where
+  mempty = empty
+#if MIN_VERSION_base(4,9,0)
+  mappend = (Semigroup.<>)
+#else
+  mappend = (><)
+#endif
+
 instance Sequence BSeq where
   empty     = Empty
   singleton = Leaf
@@ -59,6 +75,3 @@ instance Sequence BSeq where
   viewl Empty               = EmptyL
   viewl (Leaf x)            = x :< Empty
   viewl (Node (Leaf x) r)   = x :< r
-
-
-
