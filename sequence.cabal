@@ -8,7 +8,7 @@ Author:              Atze van der Ploeg
 Maintainer:          atzeus@gmail.com
 Homepage:            https://github.com/atzeus/sequence
 Build-Type:          Simple
-Cabal-Version:       >=1.6
+Cabal-Version:       >=1.8
 Data-files:          ChangeLog
 Category:            Data, Data Structures
 Tested-With:         GHC==7.6.3
@@ -23,6 +23,19 @@ Library
     , Data.Sequence.ToCatQueue
   Other-modules: Data.Sequence.Any
   Extensions:	
+
+test-suite sequence-test
+  if impl(ghc < 7.10)
+    buildable: False
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  default-language: Haskell2010
+  main-is:          Test.hs
+  build-depends:    base >=4.5 && < 5
+                  , sequence
+                  , tasty >= 1.4
+                  , QuickCheck
+                  , tasty-quickcheck
 
 source-repository head
     type:     git
