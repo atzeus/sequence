@@ -27,7 +27,7 @@
 module Data.Sequence.Queue(module Data.SequenceClass,Queue)  where
 import Control.Applicative (pure, (<*>), (<$>))
 import Data.Foldable
-import Data.Monoid ((<>))
+import Data.Monoid (Monoid (..), (<>))
 import Data.Traversable
 #if MIN_VERSION_base(4,9,0)
 import qualified Data.Semigroup as Semigroup

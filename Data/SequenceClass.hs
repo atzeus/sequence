@@ -19,7 +19,8 @@
 module Data.SequenceClass(Sequence(..), ViewL(..), ViewR(..)) where
 
 import Data.Monoid
-import Data.Foldable
+import Data.Foldable (foldl')
+import qualified Data.Traversable as T
 import qualified Data.Sequence as S
 
 infixr 5 <|
@@ -67,7 +68,7 @@ Observation laws:
 The behaviour of '<|','|>', and 'viewr' is implied by the above laws and their
 default definitions.
 -}
-class Traversable s => Sequence s where
+class T.Traversable s => Sequence s where
 
   {-# MINIMAL
     empty,

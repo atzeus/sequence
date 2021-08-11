@@ -30,6 +30,7 @@ module Data.Sequence.ToCatQueue(module Data.SequenceClass,ToCatQueue) where
 import Control.Applicative hiding (empty)
 import Data.Foldable
 import Data.Traversable
+import Data.Monoid (Monoid (..))
 import qualified Text.Read as TR
 #if MIN_VERSION_base(4,9,0)
 import qualified Data.Semigroup as Semigroup
