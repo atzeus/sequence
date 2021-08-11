@@ -96,8 +96,11 @@ instance Foldable FastQueue where
 #endif
 
 instance Traversable FastQueue where
-  traverse f = go
+  traverse f = fmap fromList . go
     where
       go q = case viewl q of
         EmptyL -> pure empty
-        h :< t  -> A.liftA2 (<|) (f h) (go t)
+        h :< t  -> A.liftA2 (:) (f h) (go t)
+
+fromList :: [a] -> FastQueue a
+fromList xs = RQ xs SNil (toAnyList xs)
