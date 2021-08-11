@@ -28,6 +28,11 @@ import Data.Foldable
 import qualified Data.Traversable as T
 import Data.Sequence.Any
 import qualified Control.Applicative as A
+import Data.Function (on)
+import qualified Text.Read as TR
+#if MIN_VERSION_base(4,9,0)
+import Data.Functor.Classes (Show1 (..))
+#endif
 
 #if !MIN_VERSION_base(4,8,0)
 import Data.Functor (Functor (..))
@@ -81,6 +86,32 @@ instance Sequence FastQueue where
   viewl (RQ [] ~SNil ~[]) = EmptyL
   viewl (RQ (h : t) f a) = h :< queue t f a
 
+  fromList xs = RQ xs SNil (toAnyList xs)
+
+instance Show a => Show (FastQueue a) where
+    showsPrec p xs = showParen (p > 10) $
+        showString "fromList " . shows (toList xs)
+
+#if MIN_VERSION_base(4,9,0)
+instance Show1 FastQueue where
+  liftShowsPrec _shwsPrc shwList p xs = showParen (p > 10) $
+        showString "fromList " . shwList (toList xs)
+#endif
+
+instance Read a => Read (FastQueue a) where
+    readPrec = TR.parens $ TR.prec 10 $ do
+        TR.Ident "fromList" <- TR.lexP
+        xs <- TR.readPrec
+        return (fromList xs)
+
+    readListPrec = TR.readListPrecDefault
+
+instance Eq a => Eq (FastQueue a) where
+  (==) = (==) `on` toList
+
+instance Ord a => Ord (FastQueue a) where
+  compare = compare `on` toList
+
 instance Foldable FastQueue where
   foldr c n = \q -> go q
     where
@@ -101,6 +132,3 @@ instance Traversable FastQueue where
       go q = case viewl q of
         EmptyL -> pure empty
         h :< t  -> A.liftA2 (:) (f h) (go t)
-
-fromList :: [a] -> FastQueue a
-fromList xs = RQ xs SNil (toAnyList xs)
