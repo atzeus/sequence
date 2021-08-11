@@ -1,5 +1,9 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE UndecidableInstances, GADTs,TypeSynonymInstances,FlexibleInstances,Rank2Types #-}
 {-# LANGUAGE StandaloneDeriving #-}
+#if __GLASGOW_HASKELL__ >= 806
+{-# LANGUAGE QuantifiedConstraints #-}
+#endif
 
 
 
@@ -68,7 +72,11 @@ Observation laws:
 The behaviour of '<|','|>', and 'viewr' is implied by the above laws and their
 default definitions.
 -}
+#if __GLASGOW_HASKELL__ >= 806
+class (T.Traversable s, forall c. Monoid (s c)) => Sequence s where
+#else
 class T.Traversable s => Sequence s where
+#endif
 
   {-# MINIMAL
     empty,
