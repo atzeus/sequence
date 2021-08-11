@@ -101,6 +101,3 @@ instance Traversable FastQueue where
       go q = case viewl q of
         EmptyL -> pure empty
         h :< t  -> A.liftA2 (<|) (f h) (go t)
-
-fromList :: [a] -> FastQueue a
-fromList = foldl' (|>) empty
