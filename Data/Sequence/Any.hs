@@ -15,8 +15,9 @@
 -- assumption. We use a newtype rather than a closed type
 -- family with no instances because the latter weren't supported
 -- until 8.0.
-module Control.Monad.Logic.Sequence.Internal.Any
+module Data.Sequence.Any
   ( Any
+  , toAny
   , toAnyList
   ) where
 
@@ -24,6 +25,10 @@ import Unsafe.Coerce
 import qualified GHC.Exts as E
 
 newtype Any = Any E.Any
+
+-- | Convert anything to 'Any'.
+toAny :: a -> Any
+toAny = unsafeCoerce
 
 -- | Convert a list of anything to a list of 'Any'.
 toAnyList :: [a] -> [Any]

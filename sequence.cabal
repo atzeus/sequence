@@ -21,7 +21,7 @@ Library
     , Data.Sequence.FastQueue
     , Data.Sequence.FastCatQueue
     , Data.Sequence.ToCatQueue
-  Other-modules: Any
+  Other-modules: Data.Sequence.Any
   Extensions:	
 
 source-repository head
