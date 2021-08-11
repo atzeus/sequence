@@ -1,3 +1,6 @@
+
+This will surely fail.
+
 {-# LANGUAGE UndecidableInstances, GADTs,TypeSynonymInstances,FlexibleInstances,Rank2Types #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
