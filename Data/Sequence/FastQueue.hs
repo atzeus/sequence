@@ -51,13 +51,13 @@ rotate [] (SNil :> y) r = y : r
 rotate (x : f) (r :> y) a = x : rotate f r (y : a)
 rotate _f _a _r  = error "Invariant |a| = |f| - (|r| - 1) broken"
 
--- | A scheduled Banker's Queue, as described by Okasaki.
-data Queue a = RQ ![a] !(SL a) ![Any]
+-- | A scheduled Banker's FastQueue, as described by Okasaki.
+data FastQueue a = RQ ![a] !(SL a) ![Any]
   deriving Functor
   -- We use 'Any' rather than an existential to allow GHC to unpack
   -- queues if it's so inclined.
 
-queue :: [a] -> SL a -> [Any] -> Queue a
+queue :: [a] -> SL a -> [Any] -> FastQueue a
 queue f r [] =
   let
     f' = appendSL f r
@@ -65,7 +65,7 @@ queue f r [] =
   in RQ f' SNil (toAnyList f')
 queue f r (_h : t) = RQ f r t
 
-instance Sequence Queue where
+instance Sequence FastQueue where
   empty = RQ [] SNil []
   singleton x =
     let
@@ -74,10 +74,14 @@ instance Sequence Queue where
     in RQ c SNil (toAnyList c)
   RQ f r a |> x = queue f (r :> x) a
 
+  -- We need to extend the schedule to maintain the
+  -- data structure invariant.
+  x <| RQ f r a = RQ (x : f) r (toAny () : a)
+
   viewl (RQ [] ~SNil ~[]) = EmptyL
   viewl (RQ (h : t) f a) = h :< queue t f a
 
-instance Foldable Queue where
+instance Foldable FastQueue where
   foldr c n = \q -> go q
     where
       go q = case viewl q of
@@ -91,12 +95,12 @@ instance Foldable Queue where
         h :< t -> go t (f b h)
 #endif
 
-instance T.Traversable Queue where
-  traverse f = fmap fromList . go
+instance Traversable FastQueue where
+  traverse f = go
     where
       go q = case viewl q of
-        EmptyL -> A.pure []
-        h :< t -> A.liftA2 (:) (f h) (go t)
+        EmptyL -> pure empty
+        h :< t  -> A.liftA2 (<|) (f h) (go t)
 
-fromList :: [a] -> Queue a
+fromList :: [a] -> FastQueue a
 fromList = foldl' (|>) empty
