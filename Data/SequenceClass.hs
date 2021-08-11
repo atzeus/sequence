@@ -25,26 +25,56 @@ import qualified Data.Sequence as S
 infixr 5 <|
 infixl 5 |>
 infix 5 ><
+infixl 9 :<
+infixr 9 :>
 {- | A type class for (finite) sequences
  
-Minimal complete defention: 'empty' and 'singleton' and ('viewl' or 'viewr') and ('><' or '|>' or '<|')
 
-Instances should satisfy the following laws:
+Instances should be /free monoids/
+(<http://comonad.com/reader/2015/free-monoids-in-haskell/ ignoring issues with infinite and partially defined structures>),
+just like lists, with @singleton@ as the canonical injection and @foldMap@
+factoring functions.  In particular, they should satisfy the following laws:
 
-Monoid laws:
+@Semigroup@ and @Monoid@ laws:
+
+> (><) == (Data.Semigroup.<>)
+> empty == mempty
+
+In particular, this requires that
 
 > empty >< x == x
 > x >< empty == x
 > (x >< y) >< z = x >< (y >< z)
+
+@FoldMap@/@singleton@ laws:
+
+For any 'Monoid' @m@ and any function @f :: c -> m@,
+
+1. @'foldMap' f@ is a monoid morphism:
+
+    * @'foldMap' f 'mempty' = 'mempty'@
+    * @'foldMap' f (m '<>' n) = 'foldMap' f m <> 'foldMap' f n@
+
+2. 'foldMap' undoes 'singleton':
+
+    @'foldMap' f . 'singleton' = f@
 
 Observation laws:
 
 > viewl (singleton e >< s) == e :< s
 > viewl empty == EmptyL
 
-The behaviour of '<|','|>', and 'viewr' is implied by the above laws and their default definitions.
+The behaviour of '<|','|>', and 'viewr' is implied by the above laws and their
+default definitions.
 -}
 class Traversable s => Sequence s where
+
+  {-# MINIMAL
+    empty,
+    singleton,
+    (viewl | viewr),
+    ((><) | (|>) | (<|))
+    #-}
 
   empty     :: s c 
   singleton :: c  -> s c 
@@ -105,15 +135,17 @@ class Traversable s => Sequence s where
 
   fromList = foldl' (|>) empty
 
+-- | A view of the left end of a 'Sequence'.
 data ViewL s c where
    EmptyL  :: ViewL s c 
-   (:<)    :: c  -> s c  -> ViewL s c 
+   (:<)    :: c -> s c -> ViewL s c
 
 deriving instance (Show c, Show (s c)) => Show (ViewL s c)
 
-data ViewR s c  where
+-- | A view of the right end of a 'Sequence'.
+data ViewR s c where
    EmptyR  :: ViewR s c 
-   (:>)     :: s c -> c -> ViewR s c 
+   (:>)    :: s c -> c -> ViewR s c
 
 deriving instance (Show c, Show (s c)) => Show (ViewR s c)
 

@@ -1,7 +1,11 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE Rank2Types,GADTs, DataKinds, TypeOperators #-}
-
-
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE DeriveTraversable #-}
+#if __GLASGOW_HASKELL__ < 710
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFoldable #-}
+#endif
 
 -----------------------------------------------------------------------------
 -- |
@@ -12,7 +16,7 @@
 -- Stability   :  provisional
 -- Portability :  portable
 --
--- A sequence, a queue, with amortized constant time: '|>', and 'tviewl'.
+-- A sequence, a queue, with amortized constant time: '|>', and 'viewl'.
 --
 -- A simplified version of Okasaki's implicit recursive
 -- slowdown queues. 
@@ -65,30 +69,15 @@ instance Traversable B where
   traverse f (B1 x) = B1 <$> f x
   traverse f (B2 p) = B2 <$> traverse f p
 
+-- | A queue.
 data Queue a  where
   Q0 :: Queue a 
   Q1 :: a  -> Queue a
   QN :: !(B a) -> Queue (P a) -> !(B a) -> Queue a
 
-instance Functor Queue where
-  fmap f Q0 = Q0
-  fmap f (Q1 x) = Q1 (f x)
-  fmap f (QN l m r) = QN (fmap f l) (fmap (fmap f) m) (fmap f r)
-
-instance Foldable Queue where
-  foldl f = loop where
-    loop i s = case viewl s of
-          EmptyL -> i
-          h :< t -> loop (f i h) t
-  foldr f i s = foldr f i (reverse $ toRevList s)
-    where toRevList s = case viewl s of
-           EmptyL -> []
-           h :< t -> h : toRevList t
-
-instance Traversable Queue where
-  traverse f Q0 = pure Q0
-  traverse f (Q1 x) = Q1 <$> f x
-  traverse f (QN b1 q b2) = QN <$> traverse f b1 <*> traverse (traverse f) q <*> traverse f b2
+deriving instance Functor Queue
+deriving instance Foldable Queue
+deriving instance Traversable Queue
 
 #if MIN_VERSION_base(4,9,0)
 instance Semigroup.Semigroup (Queue a) where

@@ -113,7 +113,22 @@ instance Eq a => Eq (FastQueue a) where
 instance Ord a => Ord (FastQueue a) where
   compare = compare `on` toList
 
+-- -----------------
+-- Note: folding and traversing
+--
+-- We define the Foldable and Traversable instances for this type manually
+-- rather than deriving them. This is necessary to maintain the *worst case*
+-- performance bounds expected for this type. For example, suppose we convert a
+-- FastQueue to a list using toList. Then we expect to be able to consume each
+-- cons of the resulting list in O(1) time. If we used the derived instance,
+-- and had RQ f r a, then once f was exhausted we'd have to pause to reverse r.
+-- Note that `traverse` is inherently a bit weird from a performance
+-- standpoint, because it delays building the result structure until the end.
+-- There's nothing we can do about this; the Applicative constraint on traverse
+-- isn't sufficient to build as we go.
+
 instance Foldable FastQueue where
+  -- See note: folding and traversing
   foldr c n = \q -> go q
     where
       go q = case viewl q of
@@ -127,7 +142,8 @@ instance Foldable FastQueue where
         h :< t -> go t (f b h)
 #endif
 
-instance Traversable FastQueue where
+instance T.Traversable FastQueue where
+  -- See note: folding and traversing
   traverse f = fmap fromList . go
     where
       go q = case viewl q of
