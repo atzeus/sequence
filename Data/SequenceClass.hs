@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances, GADTs,TypeSynonymInstances,FlexibleInstances,Rank2Types #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 
 
@@ -77,6 +78,13 @@ class (Functor s, Foldable s) => Sequence s where
   --
   (<|)       :: c  -> s c -> s c
   
+  -- | Convert a list to a sequence
+  --
+  -- Default definition:
+  --
+  -- > fromList = foldl' (|>) empty
+  fromList :: [c] -> s c
+
   l |> r = l >< singleton r
   l <| r = singleton l >< r
   l >< r = case viewl l of
@@ -95,13 +103,19 @@ class (Functor s, Foldable s) => Sequence s where
         EmptyR -> empty   :> h
         p :> l   -> (h <| p) :> l
 
+  fromList = foldl' (|>) empty
+
 data ViewL s c where
    EmptyL  :: ViewL s c 
    (:<)    :: c  -> s c  -> ViewL s c 
 
+deriving instance (Show c, Show (s c)) => Show (ViewL s c)
+
 data ViewR s c  where
    EmptyR  :: ViewR s c 
    (:>)     :: s c -> c -> ViewR s c 
+
+deriving instance (Show c, Show (s c)) => Show (ViewR s c)
 
  
 instance Sequence S.Seq where
@@ -116,6 +130,7 @@ instance Sequence S.Seq where
  viewr s = case S.viewr s of
    S.EmptyR -> EmptyR
    t S.:> h -> t :> h
+ fromList = S.fromList
 
 instance Sequence [] where
   empty = []
@@ -123,6 +138,4 @@ instance Sequence [] where
   (<|) = (:)
   viewl [] = EmptyL
   viewl (h : t) = h :< t 
-
-
-
+  fromList = id

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE GADTs #-}
 
 
@@ -23,6 +24,11 @@ module Data.Sequence.ToCatQueue(module Data.SequenceClass,ToCatQueue) where
 import Control.Applicative (pure, (<*>), (<$>))
 import Data.Foldable
 import Data.Traversable
+import qualified Text.Read as TR
+#if MIN_VERSION_base(4,9,0)
+import Data.Functor.Classes (Show1 (..))
+#endif
+import Data.Function (on)
 import Prelude hiding (foldr,foldl)
 import Data.SequenceClass
 
@@ -31,6 +37,30 @@ import Data.SequenceClass
 data ToCatQueue q a where
   C0 :: ToCatQueue q a
   CN :: a -> !(q (ToCatQueue q a)) -> ToCatQueue q a
+
+instance (Show a, Foldable q) => Show (ToCatQueue q a) where
+    showsPrec p xs = showParen (p > 10) $
+        showString "fromList " . shows (toList xs)
+
+#if MIN_VERSION_base(4,9,0)
+instance Foldable q => Show1 (ToCatQueue q) where
+  liftShowsPrec _shwsPrc shwList p xs = showParen (p > 10) $
+        showString "fromList " . shwList (toList xs)
+#endif
+
+instance (Sequence q, Read a) => Read (ToCatQueue q a) where
+    readPrec = TR.parens $ TR.prec 10 $ do
+        TR.Ident "fromList" <- TR.lexP
+        xs <- TR.readPrec
+        return (fromList xs)
+
+    readListPrec = TR.readListPrecDefault
+
+instance (Foldable q, Eq a) => Eq (ToCatQueue q a) where
+  (==) = (==) `on` toList
+
+instance (Foldable q, Ord a) => Ord (ToCatQueue q a) where
+  compare = compare `on` toList
 
 instance Functor q => Functor (ToCatQueue q) where
   fmap f C0 = C0
