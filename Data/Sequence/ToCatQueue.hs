@@ -21,11 +21,12 @@
 -----------------------------------------------------------------------------
 
 module Data.Sequence.ToCatQueue(module Data.SequenceClass,ToCatQueue) where
-import Control.Applicative (pure, (<*>), (<$>))
+import Control.Applicative hiding (empty)
 import Data.Foldable
 import Data.Traversable
 import qualified Text.Read as TR
 #if MIN_VERSION_base(4,9,0)
+import qualified Data.Semigroup as Semigroup
 import Data.Functor.Classes (Show1 (..))
 #endif
 import Data.Function (on)
@@ -91,4 +92,16 @@ instance Sequence q => Sequence (ToCatQueue q) where
 
 instance Traversable q => Traversable (ToCatQueue q) where
   traverse f C0 = pure C0
-  traverse f (CN x qs) = CN <$> f x <*> traverse (traverse f) qs
+  traverse f (CN x qs) = liftA2 CN (f x) (traverse (traverse f) qs)
+
+#if MIN_VERSION_base(4,9,0)
+instance Sequence q => Semigroup.Semigroup (ToCatQueue q a) where
+  (<>) = (><)
+#endif
+instance Sequence q => Monoid (ToCatQueue q a) where
+  mempty = empty
+#if MIN_VERSION_base(4,9,0)
+  mappend = (Semigroup.<>)
+#else
+  mappend = (><)
+#endif

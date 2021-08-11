@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE Rank2Types,GADTs, DataKinds, TypeOperators #-}
 
 
@@ -24,6 +25,10 @@ import Control.Applicative (pure, (<*>), (<$>))
 import Data.Foldable
 import Data.Monoid ((<>))
 import Data.Traversable
+#if MIN_VERSION_base(4,9,0)
+import qualified Data.Semigroup as Semigroup
+#endif
+
 import Prelude hiding (foldr,foldl)
 import Data.SequenceClass
 
@@ -84,6 +89,18 @@ instance Traversable Queue where
   traverse f Q0 = pure Q0
   traverse f (Q1 x) = Q1 <$> f x
   traverse f (QN b1 q b2) = QN <$> traverse f b1 <*> traverse (traverse f) q <*> traverse f b2
+
+#if MIN_VERSION_base(4,9,0)
+instance Semigroup.Semigroup (Queue a) where
+  (<>) = (><)
+#endif
+instance Monoid (Queue a) where
+  mempty = empty
+#if MIN_VERSION_base(4,9,0)
+  mappend = (Semigroup.<>)
+#else
+  mappend = (><)
+#endif
 
 instance Sequence Queue where
   empty = Q0
