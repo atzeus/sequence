@@ -62,6 +62,8 @@ data Queue a  where
   QN :: !(B a) -> Queue (P a) -> !(B a) -> Queue a
 
 deriving instance Functor Queue
+-- The derived Foldable instance has an optimal null
+-- with a good unfolding. No need to fuss around with it.
 deriving instance Foldable Queue
 deriving instance Traversable Queue
 
