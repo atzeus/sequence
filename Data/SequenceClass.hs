@@ -71,6 +71,13 @@ Observation laws:
 
 The behaviour of '<|','|>', and 'viewr' is implied by the above laws and their
 default definitions.
+
+Warning: the default definitions are typically awful. Check them carefully
+before relying on them. In particular, they may well work in @O(n^2)@ time (or
+worse?) when even definitions that convert to and from lists would work in
+@O(n)@ time. Exceptions: for sequences with constant time concatenation, the
+defaults for '<|' and '|>' are okay. For sequences with constant time '|>',
+the default for 'fromList' is okay.
 -}
 #if __GLASGOW_HASKELL__ >= 806
 class (T.Traversable s, forall c. Monoid (s c)) => Sequence s where
@@ -177,6 +184,19 @@ instance Sequence [] where
   empty = []
   singleton x = [x]
   (<|) = (:)
+  xs |> x = xs ++ [x]
+  (><) = (++)
   viewl [] = EmptyL
   viewl (h : t) = h :< t 
+
+  -- This definition is entirely strict. I'm not sure whether there's
+  -- a real benefit to making it lazy or not.
+  -- NOTE: if we *do* make it lazy, then the definition of viewr
+  -- for FastQueue will have to be adjusted to keep its bounds
+  -- worst case.
+  viewr [] = EmptyR
+  viewr (x : xs) = case go x xs of (start, end) -> start :> end
+    where
+      go y [] = ([], y)
+      go y (z : zs) = case go z zs of (start, end) -> (y : start, end)
   fromList = id
