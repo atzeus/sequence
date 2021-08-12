@@ -157,6 +157,11 @@ instance Foldable FastQueue where
         h :< t -> go t (f b h)
 #endif
 
+#if MIN_VERSION_base(4,8,0)
+  null (RQ [] _ _) = True
+  null _ = False
+#endif
+
 instance T.Traversable FastQueue where
   -- See note: folding and traversing
   traverse f = fmap fromList . go

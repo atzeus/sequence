@@ -39,7 +39,23 @@ import Data.SequenceClass
 -- | A catenable queue intended for ephemeral use.
 data BSeq a = Empty | Leaf a | Node (BSeq a) (BSeq a)
 -- Invariant: Neither child of a Node may be Empty.
-  deriving (Functor, Foldable, Traversable)
+  deriving (Functor, Traversable)
+
+instance Foldable BSeq where
+  foldMap _ Empty = mempty
+  foldMap f (Leaf a) = f a
+  foldMap f (Node l r) = foldMap f l `mappend` foldMap f r
+
+  foldr _ n Empty = n
+  foldr c n (Leaf a) = c a n
+  foldr c n (Node l r) = foldr c (foldr c n r) l
+
+#if MIN_VERSION_base(4,8,0)
+  -- This implementation avoids digging into Nodes to see
+  -- that they're not empty.
+  null Empty = True
+  null _ = False
+#endif
 
 #if MIN_VERSION_base(4,9,0)
 instance Semigroup.Semigroup (BSeq a) where

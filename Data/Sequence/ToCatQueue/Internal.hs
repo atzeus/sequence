@@ -10,7 +10,6 @@
 #endif
 
 
-
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Data.Sequence.ToCatQueue.Internal
@@ -88,14 +87,15 @@ instance Sequence q => Sequence (ToCatQueue q) where
  (CN x q)  >< ys  = CN x (q |> ys)
 
  viewl C0        = EmptyL
- viewl (CN h t)  = h :< linkAll t
-   where 
-    linkAll :: Sequence q =>  q (ToCatQueue q a)  -> ToCatQueue q a
-    linkAll v = case viewl v of
-     EmptyL     -> C0
-     CN x q :< t  -> CN x (q `snoc` linkAll t)
-    snoc q C0  = q
-    snoc q r   = q |> r
+ viewl (CN x q0)  = x :< case viewl q0 of
+   EmptyL -> C0
+   t :< q'  -> linkAll t q'
+   where
+   linkAll :: ToCatQueue q a -> q (ToCatQueue q a) -> ToCatQueue q a
+   linkAll t@(CN x q) q' = case viewl q' of
+     EmptyL -> t
+     h :< t' -> CN x (q |> linkAll h t')
+   linkAll C0 _ = error "Invariant failure"
 
  viewr = foldl' go EmptyR
    where
