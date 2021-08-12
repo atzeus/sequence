@@ -4,6 +4,7 @@
 
 import Test.Tasty
 import Test.Tasty.QuickCheck as QC hiding ((><))
+import Test.QuickCheck.Function (Fun, apply)
 import Data.SequenceClass
 import Valid
 import Data.Proxy
@@ -29,7 +30,18 @@ tests = testGroup "Tests"
   , testsFor "Queue" (Proxy :: Proxy Queue)
   , testsFor "ToCatQueue FastQueue" (Proxy :: Proxy (ToCatQueue FastQueue))
   , testsFor "ToCatQueue Queue" (Proxy :: Proxy (ToCatQueue Queue))
+  , specialCat
   ]
+
+specialCat :: TestTree
+specialCat = testGroup "Special tests for ToCatQueue FastQueue"
+  [ monadProp ]
+
+monadProp :: TestTree
+monadProp = QC.testProperty "bind binds" $
+  \ (s :: ToCatQueue FastQueue Int) (f :: Fun Int (ToCatQueue FastQueue Integer)) ->
+      let t = s >>= apply f
+      in valid t .&&. (toList s >>= toList . apply f) === toList t
 
 testsFor :: Usable s => String -> Proxy s -> TestTree
 testsFor s p = testGroup (s ++ " Tests") [properties p]

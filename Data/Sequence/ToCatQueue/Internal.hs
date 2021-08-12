@@ -40,6 +40,7 @@ import qualified Data.Semigroup as Semigroup
 import Data.Functor.Classes (Show1 (..))
 #endif
 import Data.Function (on)
+import Control.Monad (ap)
 import Prelude hiding (foldr,foldl)
 import Data.SequenceClass
 
@@ -103,6 +104,33 @@ instance Sequence q => Sequence (ToCatQueue q) where
      go (xs :> x) y = xs' :> y
        where
          !xs' = xs |> x
+
+instance Sequence q => Applicative (ToCatQueue q) where
+  pure = singleton
+  (<*>) = ap
+
+instance Sequence q => Monad (ToCatQueue q) where
+  C0 >>= _ = C0
+  CN x q0 >>= f = f x >< linkAll (fmap (>>= f) q0)
+    where
+    linkAll :: Sequence q =>  q (ToCatQueue q a)  -> ToCatQueue q a
+    linkAll v = case viewl v of
+     EmptyL     -> C0
+     C0 :< t -> linkAll t
+     CN x q :< t -> CN x $
+       case dropNulls t of
+         Nothing -> q
+         Just t' -> q |> linkAll t'
+
+    dropNulls :: Sequence q => q (ToCatQueue q a) -> Maybe (q (ToCatQueue q a))
+    dropNulls q = case viewl q of
+      EmptyL -> Nothing
+      C0 :< r -> dropNulls r
+      _ -> Just q
+
+#if !MIN_VERSION_base(4,8,0)
+  return = pure
+#endif
 
 #if MIN_VERSION_base(4,9,0)
 instance Sequence q => Semigroup.Semigroup (ToCatQueue q a) where
