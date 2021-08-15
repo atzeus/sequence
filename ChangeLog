@@ -1,3 +1,20 @@
+0.9.8.0:
+* Fixed incomplete pattern errors for `FastQueue` and `BSeq`.
+* Fixed fold order for `BSeq`.
+* Added a small test suite.
+* Added `Semigroup`, `Monoid`, `Eq`, `Ord`, `Show`, `Show1`,
+and `Read` instances for all the sequences.
+* Added a `fromList` method.
+* Made all method implementations reasonably efficient (to the
+extent possible for each structure). The defaults led to some
+operations being too slow to allow the test suite to complete.
+* Fixed a strictness bug in `viewl` for `FastQueue` that caused its
+amortized bounds to degrade under persistence.
+* Made folds and traversals for `FastQueue` respect the worst-case
+bounds for each element pulled.
+* Made `fmap` for `FastQueue` stop mapping over the schedule.
+* Arranged for GHC to be able to unpack `FastQueue`, though that
+will not immediately improve `FastCatQueue`.
 0.9.7: Added binary tree sequence datastructure
 0.9.6: Fixed bug in Functor for FastQueue which causes it be not O(1)
 0.9.5: Added traversable instances (thanks dolio!)
