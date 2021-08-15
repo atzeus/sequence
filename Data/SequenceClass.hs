@@ -1,9 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE UndecidableInstances, GADTs,TypeSynonymInstances,FlexibleInstances,Rank2Types #-}
 {-# LANGUAGE StandaloneDeriving #-}
-#if __GLASGOW_HASKELL__ >= 806
-{-# LANGUAGE QuantifiedConstraints #-}
-#endif
 
 
 
@@ -24,7 +21,7 @@ module Data.SequenceClass(Sequence(..), ViewL(..), ViewR(..)) where
 
 import Data.Monoid
 import Data.Foldable (foldl')
-import qualified Data.Traversable as T
+import qualified Data.Foldable as F
 import qualified Data.Sequence as S
 
 infixr 5 <|
@@ -79,11 +76,7 @@ worse?) when even definitions that convert to and from lists would work in
 defaults for '<|' and '|>' are okay. For sequences with constant time '|>',
 the default for 'fromList' is okay.
 -}
-#if __GLASGOW_HASKELL__ >= 806
-class (T.Traversable s, forall c. Monoid (s c)) => Sequence s where
-#else
-class T.Traversable s => Sequence s where
-#endif
+class (F.Foldable s, Functor s) => Sequence s where
 
   {-# MINIMAL
     empty,
