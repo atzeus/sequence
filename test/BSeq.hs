@@ -1,4 +1,5 @@
 {-# language BangPatterns #-}
+{-# options_ghc -fno-warn-orphans #-}
 module BSeq where
 import Data.Sequence.BSeq.Internal
 import Test.QuickCheck

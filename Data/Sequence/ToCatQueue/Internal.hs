@@ -87,7 +87,7 @@ instance Sequence q => Sequence (ToCatQueue q) where
  (CN x q)  >< ys  = CN x (q |> ys)
 
  viewl C0        = EmptyL
- viewl (CN x q0)  = x :< case viewl q0 of
+ viewl (CN x0 q0)  = x0 :< case viewl q0 of
    EmptyL -> C0
    t :< q'  -> linkAll t q'
    where

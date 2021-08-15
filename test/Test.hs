@@ -9,17 +9,18 @@ import Valid
 import Data.Proxy
 import Data.Foldable
 
-import FastQueue
+import FastQueue ()
 import Data.Sequence.FastQueue
-import BSeq
+import BSeq ()
 import Data.Sequence.BSeq
-import Queue
+import Queue ()
 import Data.Sequence.Queue
-import ToCatQueue
+import ToCatQueue ()
 import Data.Sequence.ToCatQueue
 
 type Usable s = (Arbitrary (s Int), Show (s Int), Eq (s Int), Valid s, Sequence s)
 
+main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
@@ -38,7 +39,7 @@ properties :: Usable s => Proxy s -> TestTree
 properties p = testGroup "Properties" [qcProps p]
 
 qcProps :: Usable s => Proxy s -> TestTree
-qcProps (p :: Proxy s) = testGroup "(checked by QuickCheck)" $
+qcProps (_ :: Proxy s) = testGroup "(checked by QuickCheck)" $
   [ QC.testProperty "generator valid" $
      -- We avoid trying to show an invalid generated sequence
      -- because doing so may raise an exception.

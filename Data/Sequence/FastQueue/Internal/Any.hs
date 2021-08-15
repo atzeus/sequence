@@ -5,8 +5,10 @@
 -- We suppress this warning because otherwise GHC complains
 -- about the newtype constructor not being used.
 #if __GLASGOW_HASKELL__ >= 800
+-- This warning doesn't seem to exist before 8.0, by any name.
 {-# OPTIONS_GHC -Wno-unused-top-binds #-}
 #endif
+
 
 -- | It's safe to coerce /to/ 'Any' as long as you don't
 -- coerce back. We define our own 'Any' instead of using
@@ -15,7 +17,7 @@
 -- assumption. We use a newtype rather than a closed type
 -- family with no instances because the latter weren't supported
 -- until 8.0.
-module Data.Sequence.Any
+module Data.Sequence.FastQueue.Internal.Any
   ( Any
   , toAny
   , toAnyList

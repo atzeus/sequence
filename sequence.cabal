@@ -15,6 +15,7 @@ Category:            Data, Data Structures
 Tested-With:         GHC==7.6.3
 Library
   default-language: Haskell2010
+  ghc-options: -Wall -fno-warn-unused-imports
   build-depends: base >= 2 && <= 6, containers, transformers
   exposed-modules:
       Data.SequenceClass
@@ -27,11 +28,12 @@ Library
     , Data.Sequence.FastCatQueue
     , Data.Sequence.ToCatQueue
     , Data.Sequence.ToCatQueue.Internal
-    , Data.Sequence.Any
+    , Data.Sequence.FastQueue.Internal.Any
 
 test-suite sequence-test
   if impl(ghc < 7.10)
     buildable: False
+  ghc-options: -Wall -fno-warn-unused-imports
   type:             exitcode-stdio-1.0
   hs-source-dirs:   test
   default-language: Haskell2010

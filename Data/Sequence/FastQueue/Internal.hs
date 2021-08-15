@@ -32,7 +32,7 @@ import Data.SequenceClass hiding ((:>))
 import qualified Data.SequenceClass as SC
 import Data.Foldable
 import qualified Data.Traversable as T
-import Data.Sequence.Any
+import Data.Sequence.FastQueue.Internal.Any
 import qualified Control.Applicative as A
 import Data.Function (on)
 import qualified Text.Read as TR

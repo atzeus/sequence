@@ -96,7 +96,7 @@ instance Sequence Queue where
 
   (><) = foldl' (|>)
 
-  viewl q = case q of
+  viewl q0 = case q0 of
     Q0                    -> EmptyL
     Q1 a                  -> a :< Q0
     QN (B2 (a :* b)) m r  -> a :< QN (B1 b) m r
@@ -106,7 +106,7 @@ instance Sequence Queue where
                EmptyL -> buf2queue r
                l :< m -> QN (B2 l) m r
 
-  viewr q = case q of
+  viewr q0 = case q0 of
     Q0 -> EmptyR
     Q1 a -> Q0 :> a
     QN l m (B2 (a :* b)) -> QN l m (B1 a) :> b
