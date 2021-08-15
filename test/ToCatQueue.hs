@@ -1,10 +1,11 @@
 {-# language BangPatterns #-}
 {-# language LambdaCase #-}
+{-# options_ghc -fno-warn-orphans #-}
+
 module ToCatQueue where
 import Data.SequenceClass
 import Data.Sequence.ToCatQueue.Internal
 import Test.QuickCheck
-import Data.Sequence.Any
 import Data.List (replicate)
 import Data.Foldable (all)
 import Valid

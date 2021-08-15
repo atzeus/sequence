@@ -1,8 +1,10 @@
 {-# language BangPatterns #-}
+{-# options_ghc -fno-warn-orphans #-}
+
 module FastQueue where
 import Data.Sequence.FastQueue.Internal
 import Test.QuickCheck
-import Data.Sequence.Any
+import Data.Sequence.FastQueue.Internal.Any
 import Data.List (replicate)
 import Valid
 

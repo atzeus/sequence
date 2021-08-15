@@ -1,4 +1,6 @@
 {-# language BangPatterns #-}
+{-# options_ghc -fno-warn-orphans #-}
+
 module Queue where
 import Data.Sequence.Queue.Internal
 import Test.QuickCheck
@@ -53,6 +55,7 @@ mkArbQ n g
 mkArbB :: Int -> Gen a -> Gen (B a)
 mkArbB 1 g = B1 <$> g
 mkArbB 2 g = B2 <$> mkArbP g
+mkArbB _ _ = error "mkArbB must be called with 1 or 2."
 
 mkArbP :: Gen a -> Gen (P a)
 mkArbP g = (:*) <$> g <*> g
