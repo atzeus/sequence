@@ -1,5 +1,5 @@
 Name:                sequence
-Version:             0.9.7
+Version:             0.9.8.0
 Synopsis:	     A type class for sequences and various sequence data structures.
 Description:         A type class for finite sequences along with several data structures
                      that implement it.

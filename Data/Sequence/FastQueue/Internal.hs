@@ -47,10 +47,13 @@ import Data.Monoid (Monoid (..))
 #endif
 
 infixl 5 :>
--- | A strict-spined snoc-list
+-- | A lazy-spined snoc-list. Why lazy-spined? Only because
+-- that's better for `fmap`. In theory, strict-spined should
+-- be a bit better for everything else, but in practice it
+-- makes no measurable difference.
 data SL a
   = SNil
-  | !(SL a) :> a
+  | SL a :> a
   deriving Functor
 
 -- | Append a snoc list to a list.
